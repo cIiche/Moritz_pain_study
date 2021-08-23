@@ -4,7 +4,7 @@
 %individually
 close all
 clear all
-%clears all data so that there are no missasinged values
+%clears all data so that there are no missassigned values
 
 %Change folder path to match where you save the files and data
 %always need "\" at the end of the folder name, copy adn paste so that no errors are made

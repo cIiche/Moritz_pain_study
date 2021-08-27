@@ -240,8 +240,8 @@ d=stas.(char(names(1)));
 % d=filtfilt(bb,aa,d')';
 
 % max_rms=0;
-if time_series == 3 
-    for k=1:3 
+
+for k=1:10
        concat=['RMSvals_' num2str(k)];
 %        all_points(1).(concat)=rms(alldata.(char(names))(:,fs*(tb+k-1):fs*(tb+k))');
        all_points(1).(concat)=rms(d(:,fs*(tb+k-1):fs*(tb+k))');
@@ -250,23 +250,6 @@ if time_series == 3
 %        if maxrms > max_rms
 %            max_rms=maxrms;
 %        end
- 
-    end 
-    % % for 0.5 seconds increments 
-    all_points(1).RMSvals_0point5=rms(d(:,fs*(tb+0.5-1):fs*(tb+0.5))');   
-	all_points(1).RMSvals_1point5=rms(d(:,fs*(tb+1.5-1):fs*(tb+1.5))');   
-    all_points(1).RMSvals_2point5=rms(d(:,fs*(tb+2.5-1):fs*(tb+2.5))');  
-else 
-   for k=1:10
-       concat=['RMSvals_' num2str(k)];
-%        all_points(1).(concat)=rms(alldata.(char(names))(:,fs*(tb+k-1):fs*(tb+k))');
-       all_points(1).(concat)=rms(d(:,fs*(tb+k-1):fs*(tb+k))');
-%        plot(d(:,fs*(tb+k-1):fs*(tb+k)))
-%        maxrms=max(all_points(1).(concat));
-%        if maxrms > max_rms
-%            max_rms=maxrms;
-%        end
-   end 
 end 
 
       
@@ -277,13 +260,10 @@ end
 %     all_points(1).RMSvals_4; all_points(1).RMSvals_3; all_points(1).RMSvals_2; all_points(1).RMSvals_1];
 
 % first 3 sec
-if time_series == 3 
-    matrix=[all_points(1).RMSvals_0point5; all_points(1).RMSvals_1; all_points(1).RMSvals_1point5; all_points(1).RMSvals_2; 
-    all_points(1).RMSvals_2point5; all_points(1).RMSvals_3]; 
-else 
+
     matrix=[all_points(1).RMSvals_1; all_points(1).RMSvals_2; all_points(1).RMSvals_3; all_points(1).RMSvals_4; all_points(1).RMSvals_5;
     all_points(1).RMSvals_6; all_points(1).RMSvals_7; all_points(1).RMSvals_8; all_points(1).RMSvals_9; all_points(1).RMSvals_10];
-end 
+
 
 %% normalize the data using the baseline RMS
 matrix=matrix/rms_baseline;

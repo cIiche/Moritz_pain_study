@@ -8,7 +8,7 @@ time=time1/fs/60;
 %% change the bandpass for filtering pls
     % default done 
 %     [bb,aa]=butter(3,[3,100]/(fs/2)); %trying to get the us noise out, 3 to 200
-% [bb,aa]=butter(2,[3,100]/(fs/2)); %trying to get the us noise out, 3 to 200
+[bb,aa]=butter(2,[3,100]/(fs/2)); %trying to get the us noise out, 3 to 200
 %     low gamma 
 %    [bb,aa]=butter(2,[30,59]/(fs/2)); 
     % beta
@@ -18,9 +18,6 @@ time=time1/fs/60;
     % theta
 %   [bb,aa]=butter(2,[4,7]/(fs/2));
 
-
-bandpasses = [3, 100; 30, 59; 12, 29; 8, 11; 4, 7;] ; 
-    [bb,aa]=butter(2,bandpasses(brain_wave,:)/(fs/2));
 
 %Organize data into structure array
 alldata=[]; %initialize structure array
@@ -64,13 +61,9 @@ stas.(char(names(i)))=[];
        % title(file_list(z).name,'interpreter','none');
 end
 
-if  time_series ==3 
-    tb=1; %time before stim to start STA
-    ta = 3; % first 3 seconds
-else 
     tb=1;
     ta=10; %time after stim to end STA
-end 
+
 
 %% Data conditioning (cont.) 
 % prevents errors based on discrepency between V1Ldata and
@@ -240,23 +233,7 @@ d=stas.(char(names(1)));
 % d=filtfilt(bb,aa,d')';
 
 % max_rms=0;
-if time_series == 3 
-    for k=1:3 
-       concat=['RMSvals_' num2str(k)];
-%        all_points(1).(concat)=rms(alldata.(char(names))(:,fs*(tb+k-1):fs*(tb+k))');
-       all_points(1).(concat)=rms(d(:,fs*(tb+k-1):fs*(tb+k))');
-%        plot(d(:,fs*(tb+k-1):fs*(tb+k)))
-%        maxrms=max(all_points(1).(concat));
-%        if maxrms > max_rms
-%            max_rms=maxrms;
-%        end
- 
-    end 
-    % % for 0.5 seconds increments 
-    all_points(1).RMSvals_0point5=rms(d(:,fs*(tb+0.5-1):fs*(tb+0.5))');   
-	all_points(1).RMSvals_1point5=rms(d(:,fs*(tb+1.5-1):fs*(tb+1.5))');   
-    all_points(1).RMSvals_2point5=rms(d(:,fs*(tb+2.5-1):fs*(tb+2.5))');  
-else 
+
    for k=1:10
        concat=['RMSvals_' num2str(k)];
 %        all_points(1).(concat)=rms(alldata.(char(names))(:,fs*(tb+k-1):fs*(tb+k))');
@@ -267,7 +244,7 @@ else
 %            max_rms=maxrms;
 %        end
    end 
-end 
+
 
       
  % disp(max_rms);
@@ -276,14 +253,10 @@ end
 % matrix=[all_points(1).RMSvals_9; all_points(1).RMSvals_8; all_points(1).RMSvals_7; all_points(1).RMSvals_6; all_points(1).RMSvals_5;
 %     all_points(1).RMSvals_4; all_points(1).RMSvals_3; all_points(1).RMSvals_2; all_points(1).RMSvals_1];
 
-% first 3 sec
-if time_series == 3 
-    matrix=[all_points(1).RMSvals_0point5; all_points(1).RMSvals_1; all_points(1).RMSvals_1point5; all_points(1).RMSvals_2; 
-    all_points(1).RMSvals_2point5; all_points(1).RMSvals_3]; 
-else 
+
     matrix=[all_points(1).RMSvals_1; all_points(1).RMSvals_2; all_points(1).RMSvals_3; all_points(1).RMSvals_4; all_points(1).RMSvals_5;
     all_points(1).RMSvals_6; all_points(1).RMSvals_7; all_points(1).RMSvals_8; all_points(1).RMSvals_9; all_points(1).RMSvals_10];
-end 
+ 
 
 %% normalize the data using the baseline RMS
 matrix=matrix/rms_baseline;
@@ -308,14 +281,6 @@ ticks = 0:5:60 ;
 yticks(ticks) ; 
 xlabel('Time after stimulus (s)') 
 
-% for 3 second analysis 
-if time_series == 3
-    set(gca,'XTick',[1 2 3 4 5 6] ); %This is going to be the only values affected. 
-    set(gca,'XTickLabel',[0.5 1 1.5 2 2.5 3] ); %This is what it's going to appear in those places.
-else
-    xticks(ticks)
-end  
-    
 colorbar
 %to set the magnitude for the color bar, change accordingly?????
 caxis([0.00015 0.05])

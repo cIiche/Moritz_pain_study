@@ -6,15 +6,15 @@ time=time/fs/60;
 alldata=[]; %initialize structure array
 baseline_data=[];
 
-alldata.V1Ldata=data(datastart(V1L):dataend(V1L));
+alldata.RILdata=data(datastart(RIL):dataend(RIL));
 % alldata.S1Ldata=data(datastart(S1L):dataend(S1L));
 % alldata.S1Rdata=data(datastart(S1R):dataend(S1R));
 % alldata.V1Rdata=data(datastart(V1R):dataend(V1R));
 
-rms_baseline=rms(alldata.V1Ldata);
+rms_baseline=rms(alldata.RILdata);
 
 [bb,aa]=butter(3,[3,200]/(fs/2)); %trying to get the us noise out, 3 to 200
-baseline=filtfilt(bb,aa,alldata.V1Ldata')'; % used for the butter filter
+baseline=filtfilt(bb,aa,alldata.RILdata')'; % used for the butter filter
 
 for ii=0:8
     name=['sec_' num2str(ii+1)];

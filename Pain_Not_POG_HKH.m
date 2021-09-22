@@ -6,10 +6,17 @@
 clear all
 close all
 clc
+
 % % %% load data
 
-filePath = 'C:\Users\Henry\MATLAB\Mourad Lab\Pain_Study\Data\8_11_21 rat\';
-fileName ='Trial 1' ;
+% filePath = 'C:\Users\Administrator\MATLAB\Projects\Pain_study\Data\08_11_21_Rat\';
+% fileName ='Trial 3' ;
+
+filePath = 'C:\Users\Administrator\MATLAB\Projects\Pain_study\Data\08_16_2021 rat\';
+fileName ='Trial 2' ;
+
+% filePath = 'C:\Users\Administrator\MATLAB\Projects\Pain_study\Data\08_18_2021 rat\';
+% fileName ='Trial 3' ;
 
 load([filePath,fileName]);
 
@@ -28,8 +35,10 @@ if decision == 1
 
 end 
 if decision == 0  
-    % 5/5
-    RIL=set_channels(1);LBLA=set_channels(4);RBLA=set_channels(3);LIL=set_channels(2);stim=set_channels(5) ;
+    % 8/16/21 
+     RIL=set_channels(2);LBLA=set_channels(3);RBLA=set_channels(1);LIL=set_channels(4);stim=set_channels(5) ;
+    % 8/11/21 
+%     RIL=set_channels(1);LBLA=set_channels(4);RBLA=set_channels(3);LIL=set_channels(2);stim=set_channels(5) ;
     % 5/20
 %     RS=set_channels(2);LS=set_channels(4);RH=set_channels(1);LH=set_channels(3);stim=set_channels(5) ; 
 %     5/18

@@ -12,70 +12,29 @@ clear all
 % note: trials have been formatted "trial x"; baselines : "baseline x"; 
 % trials > 1:4 have been placed in separate folders 
 
+%% load data
 
-%% SHAM - 2020 
+filePath = 'C:\Users\Administrator\MATLAB\Projects\Pain_study\Data\08_16_2021 rat\';
 
-% folder= 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\5-29-20 Mouse Experiment\'; 
-% alldata.lightstimdata=data(datastart(5):dataend(5));
-% folder= 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\06-30-2020 Mouse Experiment 1\';
-
-% folder ='C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\06-23-2020 Mouse Experiment 1\'; 
-% folder= 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\06-23-20 MOUSE 1 RECUT\' ;
-
-% folder= '4C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\06-23-2020 Mouse Experiment 2\'; 
-
-
-% folder= 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\06-24-2020 Mouse Experiment 1\';
-% folder= 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\06-24-2020 Mouse Experiment 3\'; 
-% folder= 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\06-25-2020 Mouse Experiment 1\'; 
-
-%% REAL GEN US - 2019 
-
-
-% folder= 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\12-16 RECUT\'; 
-% works if light stim channel is set to 9 instead of 7
-
-% folder= 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\12-23 Mouse Experiment\'; 
-
-% folder= 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\12-24 Data\';
-
-% folder= 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\12-27-19 RECUT\' ;
-
-
-
-%% REAL PEN US - 2020-2021
-
-% folder='C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\06-23-21 RECUT\1st session\'; 
-% works with channels set to [ 1 2 3 4 5] !
-% folder = 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\6.24.21\06-24-21 RECUT session 2\';
-
-folder = 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\8_12_21 m1\' ;
-% folder = 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\8_12_21 m2\';
-% folder = 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\8_13_21\' ; 
 
 %% 
 %Change what is in the string depending on which file/files you want to run
-file_list=dir([folder 'TRIAL*.mat']);
+fileName= 'Trial 1'
 baseline=dir([folder 'Baseline.mat']); % or baseline 1 or baseline 2 depending on trials 
 
 % set_channels=[1 2 3 4 7]; % updated so you do not have to change last number (we added code for searching for light). Change ddepending on channel in surgery notes (9?)
 % set_channels=[1 2 3 4 9]; % for 12/16/19 data, 
-set_channels=[1 2 3 4 5]; % 6/24/21 data, 6/23/21 , 7/1/21, 12/13/19
+set_channels=[1 2 3 4 6]; % 6/24/21 data, 6/23/21 , 7/1/21, 12/13/19
 
-ch_names={'V1L','S1L','S1R', 'V1R', 'lightstim'}; %setting up the names that will be assigned in the matrix and the order
+ch_names={'RIL','LBLA','RBLA', 'LIL', 'lightstim'}; %setting up the names that will be assigned in the matrix and the order
 trial_names={' FIRST LIGHT ONLY' 'LIGHT + US' ' SECOND LIGHT ONLY'};
 %plot_cwt=input('Plot CWTs? Y=1 N=2 :'); %CWT will show the frequency breakdown, use 2 if you just want to look at the averages of the EEG
 plot_cwt=2;
-time_series = input('time series(3 or 10)?');
-brain_wave = input("'3-100' = 1, low gamma = '2', beta = '3', alpha ='4', theta = '5', : ");
+
 %% this names the channels based on where they were placed, make sure they match lab chart
 
-% 8/12/21 m1
-V1L=set_channels(4);S1L=set_channels(3);S1R=set_channels(1);V1R=set_channels(2);lightstim=set_channels(5);
-% 8/12/21 m2 
-% V1L=set_channels(3);S1L=set_channels(1);S1R=set_channels(2);V1R=set_channels(4);lightstim=set_channels(5);
-% 8/13/21
-% V1L=set_channels(1);S1L=set_channels(4);S1R=set_channels(3);V1R=set_channels(2);lightstim=set_channels(5);
+%8/11/2021 Trials
+ RIL=set_channels(1);LBLA=set_channels(4);RBLA=set_channels(3);LIL=set_channels(2);stim=set_channels(5) ;
 
 %this is important since its how the other code will find the channels.
 %EverythinG is coded by name so it is not hard coded in 
@@ -102,9 +61,9 @@ for_stats_analysis=[];
 % counter = 0 ;
 %for z=1:3 
 
-for z=1:4
+for z=1:3
 %      if isequal(file_list(z).name,"TRIAL2.mat"), continue, end % skips trial 2 for refactory period trial does we dont car about (yet)
-     if isequal(file_list(z).name,"Trial 2.mat"), continue, end 
+%      if isequal(file_list(z).name,"Trial 2.mat"), continue, end 
 %      if isequal(file_list(z).name,"TRIAL 2.mat"), continue, end %for 12-23
      
 %      if isequal(file_list(z).name,"TRIAL6.mat"), continue, end % for 6/24 second session 
@@ -113,20 +72,11 @@ for z=1:4
      % data trials are 'Trial 2.mat w/ a space. Some are without a space
      % ex. 'trial1'
 %     counter = counter + 1 ; 
-    disp(z)%display the number that the code is on in the terminal, do not put a ';' after it 
-    disp(file_list(z).name);%displays the name of the file in the terminal
-    load([folder file_list(z).name]);%bringing the file data into matlab so that the code can run
 %     US_diag_stim;  
-    super_US_diag_stim ;
+    Pain_US_diag_stim ;
 end
 
 % create matrix to hold data for statistical testing
-
-% 
-% % to rename trials and skip 2 
-for_stats_analysis.Trial_2 = for_stats_analysis.Trial_3 ; 
-for_stats_analysis.Trial_3 = for_stats_analysis.Trial_4 ; 
- 
 
 
 %% histogram overlays - will remove second waterfall plot 
@@ -172,7 +122,7 @@ for_stats_analysis.Trial_3 = for_stats_analysis.Trial_4 ;
 
 
 % for kruskal-wallis 3 pairings 
-first_second_third_vector=[for_stats_analysis.Trial_1 for_stats_analysis.Trial_2 for_stats_analysis.Trial_3];
+first_second_vector=[for_stats_analysis.Trial_1 for_stats_analysis.Trial_2 for_stats_analysis.Trial_3];
 % broken up for mann whitney/wilcox test (or just use stats analysis trials
 
 % first_second_vector=[for_stats_analysis.Trial_1 for_stats_analysis.Trial_2];
@@ -181,8 +131,8 @@ first_second_third_vector=[for_stats_analysis.Trial_1 for_stats_analysis.Trial_2
 
 %% waterfall caxis automation 
 
-bottom = min(first_second_third_vector, [], 'all') ; 
-top = max(first_second_third_vector, [], 'all'); 
+bottom = min(first_second_vector, [], 'all') ; 
+top = max(first_second_vector, [], 'all'); 
 allAxes = findall(0, 'type','axes') ; 
 set(allAxes, 'clim', [bottom top]) ;
 

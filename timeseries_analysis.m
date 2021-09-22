@@ -7,9 +7,16 @@ clear all
 close all
 clc
 % % %% load data
+% 
+% filePath = 'C:\Users\Henry Tan\MATLAB\Projects\Moritz Pain Study\Data\08_11_21_Rat\';
+% fileName ='Trial 1' ;
 
-filePath = 'C:\Users\Henry Tan\MATLAB\Projects\Moritz Pain Study\Data\08_11_21_Rat\';
+filePath = 'C:\Users\Administrator\MATLAB\Projects\Pain_study\Data\08_16_2021 rat\';
 fileName ='Trial 1' ;
+
+% filePath = 'C:\Users\Administrator\MATLAB\Projects\Pain_study\Data\08_18_2021 rat\';
+% fileName ='Trial 1' ;
+
 
 load([filePath,fileName]);
 

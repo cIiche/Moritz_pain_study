@@ -3,32 +3,43 @@
 % This script plots CWTs (IN PROGRESS) 
 % from pain study rat data 
 
-clear all
+%% 
+clear 
 close all
 clc
 % % %% load data
 
-filePath = 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\8_11_21 rat\';
-fileName ='Trial 1' ;
+% filePath = 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\8_11_21 rat\';
+% fileName ='Trial 1' ;
 % fileName ='4Hz_paincircuit10ms' ;
 % fileName ='4Hz_paincircuit300mV' ;
 % fileName ='4Hz_toBAsleep10ms' ;
 % fileName ='4Hz_toBAsleep100ms' ;
 
-% filePath = 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\08_16_2021 rat\';
+filePath = 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\08_16_2021 rat\';
 % fileName ='Trial 1' ;
-% fileName= '4Hz_sleep_study_IL_before_BLA_200mV' ; 
+fileName= '4Hz_sleep_study_IL_before_BLA_200mV' ; 
 
 % filePath = 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\08_18_2021 rat\';
-% fileName ='4Hz_sleep_study_150mV' ;
+% fileName ='Trial 2' ;
 
-load([filePath,fileName]);
+% filePath = 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\08_24_2021 rat 1\' ; 
+% fileName ='Trial 1' ;
+
+% filePath = 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\08_24_2021 rat 2\' ; 
+% fileName ='Trial 1' ;
+
+% file_list=dir([folder 'Trial 1.mat']);
+
+load([filePath, fileName]);
 
 %% set parameters
 % for 8/11
-set_channels=[1 2 3 4 6] ;
+% set_channels=[1 2 3 4 6] ;
 % for 8/16, 8/18 
-% set_channels=[1 2 3 4 7] ;
+set_channels=[1 2 3 4 5 6 7] ;
+% 8/24/21 rat 1 and rat 2
+% set_channels=[1 2 3 4 5 6 7] ;
 
 % set channel identities, stim should always be on index 5, no matter what channel 
 decision = input('Do you want to manually input channels?(1 = yes, 0 = no):') ;
@@ -37,21 +48,27 @@ if decision == 1
     LBLA = input('What channel is left BLA?:') ;
     RBLA = input('What channel is right BLA?:') ;
     LIL = input('What channel is left IL?:'); 
-    RIL=set_channels(RIL);LBLA=set_channels(LBLA);RBLA=set_channels(RBLA);LIL=set_channels(LIL);stim=set_channels(5) ; 
+    STIM = input('What channel is stimulus?:'); 
+    RIL=set_channels(RIL);LBLA=set_channels(LBLA);RBLA=set_channels(RBLA);LIL=set_channels(LIL);stim=set_channels(STIM) ; 
 
 end 
 if decision == 0  
     % 8/11/21 
-    RIL=set_channels(1);LBLA=set_channels(4);RBLA=set_channels(3);LIL=set_channels(2);stim=set_channels(5) ;
+%     RIL=set_channels(1);LBLA=set_channels(4);RBLA=set_channels(3);LIL=set_channels(2);stim=set_channels(5) ;
     % 8/16/21
-%     RIL=set_channels(2);LBLA=set_channels(3);RBLA=set_channels(1);LIL=set_channels(4);stim=set_channels(5) ;
+    RIL=set_channels(2);LBLA=set_channels(3);RBLA=set_channels(1);LIL=set_channels(4);stim=set_channels(5) ;
 %     8/18/21
-%     RIL=set_channels(2);LBLA=set_channels(4);RBLA=set_channels(1);LIL=set_channels(3);stim=set_channels(5) ;
+%     RIL=set_channels(2);LBLA=set_channels(4);RBLA=set_channels(1);LIL=set_channels(3);stim=set_channels(6) ;
+%     8/24/21 rat 1
+%     RIL=set_channels(4);LBLA=set_channels(1);RBLA=set_channels(2);LIL=set_channels(3);stim=set_channels(6) ;
+%     8/24/21 rat 2
+%     RIL=set_channels(2);LBLA=set_channels(1);RBLA=set_channels(4);LIL=set_channels(3);stim=set_channels(6) ;
 end 
 
 %% plot CWT or timeseries 
 
 plotter = input("Plot CWT = '1', STA timeseries = '2': ") ; 
+plotter2 = input("Coherence analysis? '1' = yes, '2' =no:  ") ; 
 %% Set sampling rate
 % fs = input('What is the tickrate/sampling rate?:') ;
 fs = 20000 ;
@@ -81,10 +98,6 @@ names={'RILdata','LBLAdata','RBLAdata','LILdata', 'stimdata', 'RILLILbipolardata
 figure
 for i=1:length(names)
     subplot(length(names),1,i)
-    % only for 5/18 eguchi data lightstim data is too long
-%     if i == 5
-%         alldata.stimdata(3280001:6560000) = [] ;
-%     end 
     plot(time,alldata.(char(names(i)))) % this is plotting time in minutes, but if you want seconds, use timesec instead of time
     title(names(i));
 end
@@ -97,7 +110,7 @@ xlabel('time (minutes)')
 % plot(linspace(0,fs,length(fftV1)),abs(fftV1));
 % xlim([0 100]);
 % ylim([0 6]);
-%% Filter the raw data with a lowpass butterworth filter 
+%% Filter the raw data with a lowpass butterworth filter and condition removing points > 4std from data 
 %Note: it's better to filter the raw data before STAs because this limits
 %the end effects that are inevitably created by the filter (you'd get end
 %effects at the ends of each STA, vs end effects only at the beginning and
@@ -113,6 +126,11 @@ filterOrder = 3; % Filter order (e.g., 2 for a second-order Butterworth filter).
 
 for ii=1:length(names)
 filteredData.(char(names(ii))) = filtfilt(b, a,alldata.(char(names(ii)))); % Apply filter to data using zero-phase filtering
+% is this correct here? before STAs? - in vis stim, for stats_analysis is
+% filtered like this, after STA creation 
+deviation=std(filteredData.(char(names(ii))));
+trialmean = mean(filteredData.(char(names(ii))));
+filteredData.(char(names(ii))) = filteredData.(char(names(ii)))(filteredData.(char(names(ii)))<trialmean+4*deviation);
 end
 
 %% detect stimuli
@@ -169,13 +187,13 @@ subplot(4,1,4)
 xlabel('time after stimulus onset (s)')
 
 %% plot filtered CWTs of STAs or STA timeseries 
-% ticks=[0:.005:.1];
-ticks=[0:0.01:.1];
+ticks=[0:.005:.1];
+% ticks=[0:0.01:.1];
 clear yticks
 clear yticklabels
 
 str = string(names) ;
-    for i=1:length(names)-2    
+    for i=1:length(names)    
 %     for i=1:length(names)  
         figure
         caxis_track=[];
@@ -190,11 +208,15 @@ str = string(names) ;
             title(names(i))
             ylim([.001, .1])
             yticks(ticks)
-    %         yticklabels({  0    5.0000   10.0000   15.0000   20.0000   25.0000   30.0000   35.0000   40.0000   45.0000   50.0000  55.0000  60})
-            yticklabels({  0 10.0000 20.0000 30.0000 40.0000 50.0000 60})
+            
+            yticklabels({  0    5.0000   10.0000   15.0000   20.0000   25.0000   30.0000   35.0000   40.0000   45.0000   50.0000  55.0000  60})
+    
+%             yticklabels({  0 10.0000 20.0000 30.0000 40.0000 50.0000 60})
+            
             set(gca,'FontSize',15)
     %         caxis([.00008, .0002]);
             caxis([.00008, .001]);
+%             caxis([.00008, .003]);
         else
             ts = timeseries(mediansig,x2) ;
             plot(ts)

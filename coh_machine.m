@@ -1,4 +1,3 @@
-%% Authors: Henry 
 clear all
 clc
 % https://www.fieldtriptoolbox.org/faq/how_can_i_import_my_own_dataformat/ 
@@ -7,22 +6,33 @@ clc
 % for the Moritz Lab Pain Study 
 
 % finding fieldtrip toolbox ; It is most convenient to have the addpath and ft_defaults in a script with the name startup.m, which is located in your own MATLAB directory. See this information from MathWorks.
-% addpath 'C:\Users\Henry\AppData\Roaming\MathWorks\MATLAB Add-Ons\Collections\FieldTrip'
-% ft_defaults
+addpath 'C:\Users\Henry\AppData\Roaming\MathWorks\MATLAB Add-Ons\Collections\FieldTrip'
+ft_defaults
 
 % Preprocessing options that you should only use when you are calling FT_PREPROCESSING with
 % also the second input argument "data" are
 %   cfg.trials        = 'all' or a selection given as a 1xN vector (default = 'all')
-%% opening file 
+filePaths = {'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\08_18_2021 rat\8.18.21 5 min\', 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\08_24_2021 rat 1\8.24.21 r1 5 min', 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\08_24_2021 rat 2'};
+fileNames = {'after stim 0', 'after stim 1', 'after stim 2', 'after stim 3', 'after stim 4', 'after stim 5', 'after stim 6', 'after stim 7', 'after stim 8', 'after stim 9'};
+cohmat = zeros(3,10);  
 
-% filePath = 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\08_18_2021 rat\';
-filePath = 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\08_18_2021 rat\8.18.21 5 min\';
-fileName= 'after stim 9' ;
-load([filePath, fileName]);
-
+whichrat = input("What rat would you like to run? ('1' = 8/18 r1, '2' = 8/24 r2, '3' = 8/24 r3): ") ; 
+filePath = filePaths{whichrat} ;
+% for 8/18 
 set_channels=[1 2 3 4 5 6 7] ;
 RIL=set_channels(2);LBLA=set_channels(4);RBLA=set_channels(1);LIL=set_channels(3);stim=set_channels(5) ;
 fs = 20000 ;
+for i = 1:3
+    fileName = fileNames{i} ;
+    
+%% opening file 
+% filePath = 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\08_18_2021 rat\8.18.21 5 min\';
+% fileName= 'after stim 9' ;
+load([filePath, fileName]);
+% 
+% set_channels=[1 2 3 4 5 6 7] ;
+% RIL=set_channels(2);LBLA=set_channels(4);RBLA=set_channels(1);LIL=set_channels(3);stim=set_channels(5) ;
+% fs = 20000 ;
 
 timeax=1:dataend(1); %set time axis
 time=timeax/fs/60;%frames to seconds to minutes (these are the time values for each data point)
@@ -62,7 +72,7 @@ eegdata.trial = {eegdatamat} ;
 % trialsamp = 
 % data.trial
 eegdata.time = {time}; % in minutes 
-eegdata.sampleinfo = [1 6145000] ; 
+eegdata.sampleinfo = [1 length(alldata.RBLAdata)] ; 
 
 %% downsampling 
 % Use as
@@ -117,17 +127,21 @@ cfg            = [];
 cfg.method     = 'coh';
 cfg.channelcmb = {'RBLA' 'RIL'};
 fd             = ft_connectivityanalysis(cfg, freq);
-%% plotting coherence with ft_singleplotER 
 
-cfg                  = [];
-cfg.parameter        = 'cohspctrm';
-cfg.xlim             = 'maxmin';
-cfg.refchannel       = 'RIL';
-cfg.showlabels       = 'yes';
-% figure; ft_multiplotER(cfg, fd)
-% cfg.channel = 'MRC21';
-figure; 
-ft_singleplotER(cfg, fd);
-ylabel('Coherence')
-xlabel('Frequency (Hz)')
-title('Connectivity between RIL & RBLA with reference to RIL') 
+cohmat(whichrat, i) = median(fd.cohspctrm) ;
+% %% plotting coherence with ft_singleplotER 
+% 
+% cfg                  = [];
+% cfg.parameter        = 'cohspctrm';
+% cfg.xlim             = 'maxmin';
+% cfg.refchannel       = 'RIL';
+% cfg.showlabels       = 'yes';
+% % figure; ft_multiplotER(cfg, fd)
+% % cfg.channel = 'MRC21';
+% figure; 
+% ft_singleplotER(cfg, fd);
+% ylabel('Coherence')
+% xlabel('Frequency (Hz)')
+% title('Connectivity between RIL & RBLA with reference to RIL')
+
+end 

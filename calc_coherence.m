@@ -35,11 +35,11 @@ foranalysis={'RILdata','LBLAdata','RBLAdata','LILdata'};
 %effects at the ends of each STA, vs end effects only at the beginning and
 %end of the time series data
 
-% In rodents, fear regula86 tion is associated with theta band (5-8 Hz) LFP synchrony 
+% In rodents, fear regulation is associated with theta band (5-8 Hz) LFP synchrony 
 % between the infralimbic cortex (IL, homologue of human PFC) and basolateral amygdala (BLA)
-lowEnd = 3; % Hz
-highEnd = 100; % Hz
-filterOrder = 3; % Filter order (e.g., 2 for a second-order Butterworth filter). Try other values too
+lowEnd = 5; % Hz
+highEnd = 8; % Hz
+filterOrder = 2; % Filter order (e.g., 2 for a second-order Butterworth filter). Try other values too
 [b, a] = butter(filterOrder, [lowEnd highEnd]/(fs/2)); % Generate filter coefficients
 
 for ii=1:length(names)-1
@@ -54,6 +54,9 @@ trialmean = mean(filteredData.(char(names(ii))), 'omitnan');
 filteredData.(char(names(ii))) = filteredData.(char(names(ii)))(filteredData.(char(names(ii)))<trialmean+4*deviation);
 end
 
+%% downsampling signals 
+filteredData.RILdata = downsample(filteredData.RILdata, 20) ; 
+filteredData.RBLAdata = downsample(filteredData.RBLAdata, 20) ; 
 %% 
 % to match sizes 
 if length(filteredData.RILdata) < length(filteredData.RBLAdata) 
@@ -61,49 +64,76 @@ if length(filteredData.RILdata) < length(filteredData.RBLAdata)
 else 
     b = length(filteredData.RBLAdata);
 end
-
+% numrpt = b ;
+numrpt = 100000 ;
 % figure 
 % plot(filteredData.RILdata)
 % hold on 
 % plot(filteredData.RBLAdata)
 
-wav1 = filteredData.RILdata(1:b);
-wav2 = filteredData.RBLAdata(1:b); 
-cxy = mscohere(wav1, wav2) ;
+% wav1 = filteredData.RILdata(1:b);
+% wav2 = filteredData.RBLAdata(1:b); 
+% cxy = mscohere(wav1, wav2) ;
+
+% figure 
+% plot(wav1)
+% hold on 
+% plot(wav2) 
+
 % figure
 % plot(cxy)
 % title('Magnitude-Squared Coherence')
 
-% should we use mean or median?
-cohmed = median(cxy');
-cohmean = mean(cxy') ; 
+% should we use mean or median? MEDIAN 
+% cohmed = median(cxy');
+
 
 % % name pages of wavs
-%   wav(:,:,1) = filteredData.RILdata(1:b);
-%   wav(:,:,2) = filteredData.RBLAdata(1:b);
+  wav(:,:,1) = filteredData.RILdata(1:b);
+  wav(:,:,2) = filteredData.RBLAdata(1:b);
 %   
 % % get the FFT of the waves
-% % fftwav.RIL = fft(filteredData.RILdata) ; 
-% % fftwav.RBLA = fft(filteredData.RBLAdata) ; 
-% fftwav(:,:,1) = fft(filteredData.RILdata(1:6080000));
-% fftwav(:,:,2) = fft(filteredData.RBLAdata(1:6080000));
-% 
-% % calculate the power-spectral densities (psd) and the cross-spectral
-% % densities (csd) and sum them over repetitions
-% numsmp = length(wav);
-% psd = 2.*abs(fftwav).^2./(numsmp.^2);
-% csd = 2.*(fftwav(:,:,1).*conj(fftwav(:,:,2)))./(numsmp.^2);
-% sumpsd = squeeze(sum(psd,2));
-% sumcsd = squeeze(sum(csd,2));
-% 
-% % calculate coherence
-% coh = abs(sumcsd ./ sqrt(sumpsd(:,1) .* sumpsd(:,2)));
+% fftwav.RIL = fft(filteredData.RILdata) ; 
+% fftwav.RBLA = fft(filteredData.RBLAdata) ; 
+
+% figure 
+% plot(fftwav.RIL) 
+% hold on 
+% plot(fftwav.RBLA) 
+for rptlop = 1:numrpt
+  fftwav(:,rptlop,1) = fft(wav(:,rptlop,1));
+  fftwav(:,rptlop,2) = fft(wav(:,rptlop,2));
+end
+
+% calculate the power-spectral densities (psd) and the cross-spectral
+% densities (csd) and sum them over repetitions
+numsmp = length(wav);
+psd = 2.*abs(fftwav).^2./(numsmp.^2);
+csd = 2.*(fftwav(:,:,1).*conj(fftwav(:,:,2)))./(numsmp.^2);
+% we need sum of each row of psd, a column for each page 
+sumpsd = squeeze(sum(psd,2));
+
+% psd1 = psd(:,:,1);
+% psd2 = psd(:,:,2); 
+% sumpsd(1,1) = sum(psd1) ;
+% sumpsd(1,2) = sum(psd2) ;
+
+sumcsd = squeeze(sum(csd,2));
+
+figure;
+plot(squeeze(fftwav(:,:,1)));
+figure;
+plot(squeeze(fftwav(:,:,2)));
+
+% calculate coherence
+coh = abs(sumcsd ./ sqrt(sumpsd(:,1) .* sumpsd(:,2)));
+% coh = abs(sumcsd ./ sqrt(sumpsd(:,:,1) .* sumpsd(:,:,2)));
 % 
 % figure;
 % plot(squeeze(wav(:,:,1)));
 % figure;
 % plot(squeeze(wav(:,:,2)));
 % figure;
-% plot(coh);
-% 
-% cohmed = median(coh) ;
+plot(coh);
+
+cohmed = median(coh) ;

@@ -16,11 +16,17 @@ for rptlop = 1:numrpt
     randn(1,len.*smpfrq).*noifac;
 end
 
+
 % get the FFT of the waves
 for rptlop = 1:numrpt
   fftwav(:,rptlop,1) = fft(wav(:,rptlop,1));
   fftwav(:,rptlop,2) = fft(wav(:,rptlop,2));
 end
+
+figure;
+plot(squeeze(fftwav(:,:,1)));
+figure;
+plot(squeeze(fftwav(:,:,2)));
 
 % calculate the power-spectral densities (psd) and the cross-spectral
 % densities (csd) and sum them over repetitions
@@ -28,6 +34,11 @@ numsmp = length(wav);
 psd = 2.*abs(fftwav).^2./(numsmp.^2);
 csd = 2.*(fftwav(:,:,1).*conj(fftwav(:,:,2)))./(numsmp.^2);
 sumpsd = squeeze(sum(psd,2));
+% psd1 = psd(:,:,1);
+% psd2 = psd(:,:,2); 
+% for i = 1:1000 
+% sumpsd(:,1) = sum(psd1) ;
+% sumpsd(:,2) = sum(psd2) ;
 sumcsd = squeeze(sum(csd,2));
 
 % calculate coherence

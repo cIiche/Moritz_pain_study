@@ -99,10 +99,32 @@
 % set(gca,'XTickLabel',[-5 0 5 10 15 20 25 30 35 40 45 50 55 60] ); %This is what it's going to appear in those places.
 % 
 % 
+figure 
 y1 = [0.8618 0.6695 0.5030 0.8514 0.8366 0.8225 0.8483 0.3932 0.8110 0.6881];
 x1 = [0 5 10 15 20 25 30 35 40 45] ;
-figure 
-plot(x1, y1, 'g') 
-title('RIL & RBLA Coherence vs. Time after US Stimulation')
+p1 = plot(x1, y1, 'g','DisplayName','rat 1') ;
+hold on 
+y2 = [0.8177 0.8431 0.8257 0.9958 0.791 0.7731 0.7740 0.8564 0.7484 0.8049 ] ;
+p2 = plot(x1, y2, 'r','DisplayName','rat 2') ;
+hold on 
+y3 = [0.2798 0.2890 0.4836 0.3891 0.2541 0.2890 0.2488 0.3916 0.3873 0.4288] ;
+p3 = plot(x1, y3, 'b','DisplayName','rat 3') ;
+title('RIL & RBLA Coherence (5-8Hz) vs. Time after US Stimulation')
 xlabel('Time after US Stim (minutes)') 
 ylabel('Coherence value') 
+legend([p1 p2 p3],{'rat 1','rat 2', 'rat 3'})
+
+figure 
+y1 = [0.7041 0.6962 0.6479 0.6928 0.7060 0.6576 0.6855 0.6547 0.6558 0.6738];
+x1 = [0 5 10 15 20 25 30 35 40 45] ;
+p1 = plot(x1, y1, 'g','DisplayName','rat 1') ;
+hold on 
+y2 = [0.7780 0.8224 0.7615 0.9971 0.6782 0.6319 0.8619 0.6777 0.6926 0.6052] ;
+p2 = plot(x1, y2, 'r','DisplayName','rat 2') ;
+hold on 
+y3 = [0.5223 0.4932 0.5299 0.6535 0.6994 0.6080 0.5293 0.6023 0.5756 0.7209] ;
+p3 = plot(x1, y3, 'b','DisplayName','rat 3') ;
+title('RIL & RBLA Coherence (5-59Hz) vs. Time after US Stimulation')
+xlabel('Time after US Stim (minutes)') 
+ylabel('Coherence value') 
+legend([p1 p2 p3],{'rat 1','rat 2', 'rat 3'})

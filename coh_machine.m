@@ -28,19 +28,19 @@ ft_defaults
 %     fileName = fileNames{i} ;
     
 %% opening file 
-filePath = 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\08_18_2021 rat\8.18.21 5 min\';
+% filePath = 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\08_18_2021 rat\8.18.21 5 min\';
 % filePath = 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\08_24_2021 rat 1\8.24.21 r1 5 min\';
-% filePath = 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\08_24_2021 rat 2\8.24.21 r2 5 min\'; 
-fileName= 'after stim 9' ;
+filePath = 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\08_24_2021 rat 2\8.24.21 r2 5 min\'; 
+fileName= 'last 5 min baseline' ;
 load([filePath, fileName]);
 
 set_channels=[1 2 3 4 5 6 7] ;
 % % 8/18  
-RIL=set_channels(2);LBLA=set_channels(4);RBLA=set_channels(1);LIL=set_channels(3);stim=set_channels(5) ;
+% RIL=set_channels(2);LBLA=set_channels(4);RBLA=set_channels(1);LIL=set_channels(3);stim=set_channels(5) ;
 % % 8/24 r1 
 % RIL=set_channels(4);LBLA=set_channels(1);RBLA=set_channels(2);LIL=set_channels(3);stim=set_channels(5) ;
 % 8/24 r2
-% RIL=set_channels(2);LBLA=set_channels(1);RBLA=set_channels(4);LIL=set_channels(3);stim=set_channels(5) ;
+RIL=set_channels(2);LBLA=set_channels(1);RBLA=set_channels(4);LIL=set_channels(3);stim=set_channels(5) ;
 fs = 20000 ;
 
 timeax=1:dataend(1); %set time axis
@@ -96,13 +96,16 @@ eegdata.sampleinfo = [1 length(alldata.RBLAdata)] ;
 %   cfg.feedback        = 'no', 'text', 'textbar', 'gui' (default = 'text')
 %   cfg.trials          = 'all' or a selection given as a 1xN vector (default = 'all')
 %   cfg.sampleindex     = 'no' or 'yes', add a channel with the original sample indices (default = 'no')
-cfg.resamplefs = 108 ;
+% cfg.resamplefs = 108 ;
+cfg.resamplefs = 30 ;
 cfg.detrend = 'yes' ;
 cfg.demean = 'no' ;
 cfg.feedback = 'text' ;
 cfg.trials = 'all';
 cfg.sampleindex = 'no' ;
+% cfg.sampleinfo = [1 length(alldata.RBLAdata)] ; 
 data = ft_resampledata(cfg, eegdata) ;
+data.sampleinfo = [1 length(data.time{1})] ; 
 
 %% preproccesing  
 
@@ -124,7 +127,7 @@ cfg            = [];
 cfg.output     = 'powandcsd';
 cfg.method     = 'mtmfft';
 %   cfg.foilim     = [begin end], frequency band of interest
-cfg.foilim     = [5 59];
+cfg.foilim     = [5 8];
 cfg.tapsmofrq  = 5;
 cfg.keeptrials = 'no';
 % cfg.channel    = {'RBLA' 'RIL'};

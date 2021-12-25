@@ -3,53 +3,38 @@
 % This script plots CWTs (IN PROGRESS) 
 % from pain study rat data 
 
-clear all
+%% 
+clear 
 close all
 clc
-% % %% load dat0
+% % %% load data
 
-filePath = '/Users/laurieryan/MATLAB/Mourad Lab/Moritz-pain-study github/Data/08-11-21/';
+% filePath = 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\8_11_21 rat\';
+% fileName ='Trial 1' ;
+
+% filePath = 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\08_16_2021 rat\';
+% fileName ='Trial 1' ;
+
+% filePath = 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\08_18_2021 rat\';
+% fileName ='Trial 2' ;
+
+filePath = '/Users/laurieryan/MATLAB/Mourad Lab/Moritz-pain-study github/Data/08-24-21 rat 1/';
 fileName ='Trial 1' ;
-% fileName ='Trial 2' ;
-% fileName ='Trial 3' ;
 
-% filePath = '/Users/laurieryan/MATLAB/Mourad Lab/Moritz-pain-study github/Data/08-16-21/';
+% filePath = 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\08_24_2021 rat 2\' ; 
 % fileName ='Trial 1' ;
-% fileName ='Trial 2' ;
-% fileName ='Trial 3' ;
-% fileName= '4Hz_sleep_study_IL_before_BLA_200mV' ; 
 
-% filePath = '/Users/laurieryan/MATLAB/Mourad Lab/Moritz-pain-study github/Data/08-18-21/';
-% fileName ='Trial 1' ;
-% fileName ='Trial 2' ;
-% fileName ='4Hz_sleep_study_150mV' ;
+% file_list=dir([folder 'Trial 1.mat']);
 
-% filePath = '/Users/laurieryan/MATLAB/Mourad Lab/Moritz-pain-study github/Data/08-24-21 rat 1/';
-% fileName ='4 Hz sleep study 10 ms ' ;
-% fileName ='Trial 1' ;
-% fileName ='Refractory part 1' ;
-% fileName ='Refractory part 2' ;
-% fileName ='Refractory part 3' ;
-% fileName ='Refractory part 4' ;
-% fileName ='Refractory part 5' ;
-
-% filePath = '/Users/laurieryan/MATLAB/Mourad Lab/Moritz-pain-study github/Data/08-24-21 rat 2/';
-% fileName ='Trial 1' ;
-% fileName ='Refractory part 1' ;
-% fileName ='Refractory part 2' ;
-% fileName ='Refractory part 3' ;
-% fileName ='Refractory part 4' ;
-% fileName ='Refractory part 5' ;
-
-
-load([filePath,fileName]);
+load([filePath, fileName]);
 
 %% set parameters
 % for 8/11
 % set_channels=[1 2 3 4 6] ;
-set_channels=[1 2 3 4 5] ;
 % for 8/16, 8/18 
-% set_channels=[1 2 3 4 7] ;
+set_channels=[1 2 3 4 5 6 7] ;
+% 8/24/21 rat 1 and rat 2
+% set_channels=[1 2 3 4 5 6 7] ;
 
 % set channel identities, stim should always be on index 5, no matter what channel 
 decision = input('Do you want to manually input channels?(1 = yes, 0 = no):') ;
@@ -58,21 +43,25 @@ if decision == 1
     LBLA = input('What channel is left BLA?:') ;
     RBLA = input('What channel is right BLA?:') ;
     LIL = input('What channel is left IL?:'); 
-    RIL=set_channels(RIL);LBLA=set_channels(LBLA);RBLA=set_channels(RBLA);LIL=set_channels(LIL);stim=set_channels(5) ; 
+    STIM = input('What channel is stimulus?:'); 
+    RIL=set_channels(RIL);LBLA=set_channels(LBLA);RBLA=set_channels(RBLA);LIL=set_channels(LIL);stim=set_channels(STIM) ; 
 
 end 
 if decision == 0  
     % 8/11/21 
 %     RIL=set_channels(1);LBLA=set_channels(4);RBLA=set_channels(3);LIL=set_channels(2);stim=set_channels(5) ;
     % 8/16/21
-    RIL=set_channels(2);LBLA=set_channels(3);RBLA=set_channels(1);LIL=set_channels(4);stim=set_channels(5) ;
+%     RIL=set_channels(2);LBLA=set_channels(3);RBLA=set_channels(1);LIL=set_channels(4);stim=set_channels(5) ;
 %     8/18/21
-%     RIL=set_channels(2);LBLA=set_channels(4);RBLA=set_channels(1);LIL=set_channels(3);stim=set_channels(5) ;
+%     RIL=set_channels(2);LBLA=set_channels(4);RBLA=set_channels(1);LIL=set_channels(3);stim=set_channels(6) ;
+%     8/24/21 rat 1
+    RIL=set_channels(4);LBLA=set_channels(1);RBLA=set_channels(2);LIL=set_channels(3);stim=set_channels(6) ;
+%     8/24/21 rat 2
+%     RIL=set_channels(2);LBLA=set_channels(1);RBLA=set_channels(4);LIL=set_channels(3);stim=set_channels(6) ;
 end 
 
 %% plot CWT or timeseries 
 
-plotter = input("Plot CWT = '1', STA timeseries = '2': ") ; 
 %% Set sampling rate
 % fs = input('What is the tickrate/sampling rate?:') ;
 fs = 20000 ;
@@ -102,10 +91,6 @@ names={'RILdata','LBLAdata','RBLAdata','LILdata', 'stimdata', 'RILLILbipolardata
 figure
 for i=1:length(names)
     subplot(length(names),1,i)
-    % only for 5/18 eguchi data lightstim data is too long
-%     if i == 5
-%         alldata.stimdata(3280001:6560000) = [] ;
-%     end 
     plot(time,alldata.(char(names(i)))) % this is plotting time in minutes, but if you want seconds, use timesec instead of time
     title(names(i));
 end
@@ -118,7 +103,7 @@ xlabel('time (minutes)')
 % plot(linspace(0,fs,length(fftV1)),abs(fftV1));
 % xlim([0 100]);
 % ylim([0 6]);
-%% Filter the raw data with a lowpass butterworth filter 
+%% Filter the raw data with a lowpass butterworth filter and condition removing points > 4std from data 
 %Note: it's better to filter the raw data before STAs because this limits
 %the end effects that are inevitably created by the filter (you'd get end
 %effects at the ends of each STA, vs end effects only at the beginning and
@@ -134,6 +119,11 @@ filterOrder = 3; % Filter order (e.g., 2 for a second-order Butterworth filter).
 
 for ii=1:length(names)
 filteredData.(char(names(ii))) = filtfilt(b, a,alldata.(char(names(ii)))); % Apply filter to data using zero-phase filtering
+% is this correct here? before STAs? - in vis stim, for stats_analysis is
+% filtered like this, after STA creation 
+deviation=std(filteredData.(char(names(ii))));
+trialmean = mean(filteredData.(char(names(ii))));
+filteredData.(char(names(ii))) = filteredData.(char(names(ii)))(filteredData.(char(names(ii)))<trialmean+4*deviation);
 end
 
 %% detect stimuli
@@ -189,80 +179,56 @@ end
 subplot(4,1,4)
 xlabel('time after stimulus onset (s)')
 
-%% plot filtered CWTs of STAs or STA timeseries 
-% ticks=[0:.005:.1];
-ticks=[0:0.01:.1];
+%% plot FFT, power spectra, coherence spectra 
+ticks=[0:.005:.1];
+% ticks=[0:0.01:.1];
 clear yticks
 clear yticklabels
 
 str = string(names) ;
-    for i=1:length(names)-2    
-%     for i=1:length(names)  
+    for i=1:length(names)  
         figure
-        caxis_track=[];
-        %ylabels={'V1bipolar (Hz)';'S1A (Hz)';'S1V1(Hz)'; '40hzStim (Hz)'};
-        xlabel('time after stimulus onset (s)');
-        mediansig=median(stas.(char(names(i))));
-        if plotter == 1
-            [minfreq,maxfreq] = cwtfreqbounds(length(mediansig),fs); %determine the bandpass bounds for the signal
-            cwt(mediansig,[],fs);
-            ylabel('Frequency (Hz)')
-            colormap(jet)
-            title(names(i))
-            ylim([.001, .1])
-            yticks(ticks)
-    %         yticklabels({  0    5.0000   10.0000   15.0000   20.0000   25.0000   30.0000   35.0000   40.0000   45.0000   50.0000  55.0000  60})
-            yticklabels({  0 10.0000 20.0000 30.0000 40.0000 50.0000 60})
-            set(gca,'FontSize',15)
-    %         caxis([.00008, .0002]);
-            caxis([.00008, .001]);
-        else
-            ts = timeseries(mediansig,x2) ;
-            plot(ts)
-%             n = 7500; 
-            n = 5000; 
-            ts2 = movmean(mediansig, n) ; 
-           % median sta + moving average 
-%             plot(x2, mediansig, 'y', x2, ts2, 'k')
-%             legend(" " + n + " Pt. Average", "median STA");
-           % just moving average 
-%             plot(x2, ts2, 'DisplayName', title(names(i) + " mV & Moving Average"))
-            plot(x2, ts2) 
-            title(str(i))
-            ylabel('mV') ;
-            xlabel("Time (s)") ;
-        end
         
-         
-%     pngFileName = sprintf('plot_%d.fig', i);
-	%fullFileName = fullfile(folder, pngFileName);
-		
-	% Then save it
-	%export_fig(fullFileName);
-% 	   saveas(gcf, pngFileName)
-    end
+        % get the FFT of the waves for each channel 
+        mediansig=median(stas.(char(names(i))));
+        fft.(char(names(i))) = fft(mediansig);
+        subplot(2,1,1);
+        plot(real(fft.(char(names(i)))));
+        title(names(i)+ " FFT") 
+        subplot(2,1,2);
+        plot(imag(fft.(char(names(i)))),'r');
+        title(names(i)+ " FFT") 
+
+%         fftcos = fft(coswav);
+%         figure('name','fft cos');
+%         subplot(2,1,1);
+%         plot(real(fftcos));
+%         subplot(2,1,2);
+%         plot(imag(fftcos),'r');
+      
+        % plot power spectra of each channel
+        numsmp = length(fft.(char(names(i))));
+        power.(char(names(i))) = 2 .* abs(fft.(char(names(i)))) .^ 2 ./ (numsmp .^2);
+        figure('name','power');
+        plot(power.(char(names(i))));
+    end 
     
-    %% movavg STA timeseries of IL and BLA 
-% figure
-% caxis_track=[];
-% %ylabels={'V1bipolar (Hz)';'S1A (Hz)';'S1V1(Hz)'; '40hzStim (Hz)'};
-% xlabel('time after stimulus onset (s)');
-% mediansig1=median(stas.RILdata);
-% mediansig2=median(stas.RBLAdata); 
-% RILx=1:length(stas.RILdata);
-% ts = timeseries(mediansig1,RILx) ;
-% % moving average of 5000 points
-% n = 5000; 
-% ts1 = movmean(mediansig1, n) ; 
-% ts2 = movmean(mediansig2, n) ; 
-% % median sta + moving average 
-% % plot(x2, mediansig, 'y', x2, ts2, 'k')
-% % legend(" " + n + " Pt. Average", "median STA");
-% % just moving average 
-% plot(RILx, ts1, 'r')
-% hold on 
-% plot(RILx, ts2, 'b')
-% legend("Right IL", "Right BLA");
-% ylabel('mV') ;
-% title(names(i) + " mV & Moving Average");
-% xlabel("Time (s)") ;
+% test coherence between the channels  - Cross spectral density (CSD) /power
+% spectral density (PSD) 
+
+% pseudocode
+% 1. get many repetitions of 2 signals with random phase difference = FFT 
+
+% we have 2 electrodes in each hemisphere--L IL, L BLA, R IL, R BLA
+% = 2x2 = 4 different combinations 
+
+% so 
+% L IL vs. L BLA 
+% L IL vs. R BLA 
+% R IL vs. R BLA 
+% R IL vs. L BLA 
+
+% how do we compare this over multiple trials 
+
+% calculate the power-spectral densities (psd) and the cross-spectral
+% densities (csd) and sum them over repetitions

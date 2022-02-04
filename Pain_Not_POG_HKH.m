@@ -15,16 +15,17 @@ clc
 % fileName ='4Hz_paincircuit300mV' ;
 % fileName ='4Hz_toBAsleep10ms' ;
 % fileName ='4Hz_toBAsleep100ms' ;
+% fileName = '4Hz_toIL10ms' ;
 
-filePath = 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\08_16_2021 rat\';
+% filePath = 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\08_16_2021 rat\';
 % fileName ='Trial 1' ;
-fileName= '4Hz_sleep_study_IL_before_BLA_200mV' ; 
+% fileName= '4Hz_sleep_study_IL_before_BLA_200mV' ; 
 
 % filePath = 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\08_18_2021 rat\';
-% fileName ='Trial 2' ;
+% fileName ='4Hz_sleep_study_150mV' ;
 
-% filePath = 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\08_24_2021 rat 1\' ; 
-% fileName ='Trial 1' ;
+filePath = 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\08_24_2021 rat 1\' ; 
+fileName = '4 Hz sleep study 10 ms' ;
 
 % filePath = 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\08_24_2021 rat 2\' ; 
 % fileName ='Trial 1' ;
@@ -35,9 +36,9 @@ load([filePath, fileName]);
 
 %% set parameters
 % for 8/11
-% set_channels=[1 2 3 4 6] ;
+set_channels=[1 2 3 4 6] ;
 % for 8/16, 8/18 
-set_channels=[1 2 3 4 5 6 7] ;
+% set_channels=[1 2 3 4 5 6 7] ;
 % 8/24/21 rat 1 and rat 2
 % set_channels=[1 2 3 4 5 6 7] ;
 
@@ -56,13 +57,13 @@ if decision == 0
     % 8/11/21 
 %     RIL=set_channels(1);LBLA=set_channels(4);RBLA=set_channels(3);LIL=set_channels(2);stim=set_channels(5) ;
     % 8/16/21
-    RIL=set_channels(2);LBLA=set_channels(3);RBLA=set_channels(1);LIL=set_channels(4);stim=set_channels(5) ;
+%     RIL=set_channels(2);LBLA=set_channels(3);RBLA=set_channels(1);LIL=set_channels(4);stim=set_channels(5) ;
 %     8/18/21
-%     RIL=set_channels(2);LBLA=set_channels(4);RBLA=set_channels(1);LIL=set_channels(3);stim=set_channels(6) ;
+%     RIL=set_channels(2);LBLA=set_channels(4);RBLA=set_channels(1);LIL=set_channels(3);stim=set_channels(5) ;
 %     8/24/21 rat 1
-%     RIL=set_channels(4);LBLA=set_channels(1);RBLA=set_channels(2);LIL=set_channels(3);stim=set_channels(6) ;
+    RIL=set_channels(4);LBLA=set_channels(1);RBLA=set_channels(2);LIL=set_channels(3);stim=set_channels(5) ;
 %     8/24/21 rat 2
-%     RIL=set_channels(2);LBLA=set_channels(1);RBLA=set_channels(4);LIL=set_channels(3);stim=set_channels(6) ;
+%     RIL=set_channels(2);LBLA=set_channels(1);RBLA=set_channels(4);LIL=set_channels(3);stim=set_channels(5) ;
 end 
 
 %% plot CWT or timeseries 
@@ -187,7 +188,8 @@ subplot(4,1,4)
 xlabel('time after stimulus onset (s)')
 
 %% plot filtered CWTs of STAs or STA timeseries 
-ticks=[0:.005:.1];
+ticks=[0:.001:.1];
+% ticks=[0:.005:.1];
 % ticks=[0:0.01:.1];
 clear yticks
 clear yticklabels
@@ -208,15 +210,13 @@ str = string(names) ;
             title(names(i))
             ylim([.001, .1])
             yticks(ticks)
-            
-            yticklabels({  0    5.0000   10.0000   15.0000   20.0000   25.0000   30.0000   35.0000   40.0000   45.0000   50.0000  55.0000  60})
-    
+%             yticklabels({  0    5.0000   10.0000   15.0000   20.0000   25.0000   30.0000   35.0000   40.0000   45.0000   50.0000  55.0000  60})
 %             yticklabels({  0 10.0000 20.0000 30.0000 40.0000 50.0000 60})
-            
+            yticklabels({  0 1.0000 2.0000 3.0000 4.0000 5.0000 6.0000 7.0000 8.0000 9.0000 10.0000 ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' 20.0000 ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' 30 ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' 40 ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' ' 50})      
             set(gca,'FontSize',15)
     %         caxis([.00008, .0002]);
-            caxis([.00008, .001]);
-%             caxis([.00008, .003]);
+%             caxis([.00000, .0003]);
+            caxis([.00008, .01]);
         else
             ts = timeseries(mediansig,x2) ;
             plot(ts)

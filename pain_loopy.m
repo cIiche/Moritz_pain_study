@@ -13,45 +13,9 @@ clear all
 % trials > 1:4 have been placed in separate folders 
 
 
-%% SHAM - 2020 
+%% open data file 
 
-% folder= 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\5-29-20 Mouse Experiment\'; 
-% alldata.lightstimdata=data(datastart(5):dataend(5));
-% folder= 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\06-30-2020 Mouse Experiment 1\';
-
-% folder ='C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\06-23-2020 Mouse Experiment 1\'; 
-% folder= 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\06-23-20 MOUSE 1 RECUT\' ;
-
-% folder= '4C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\06-23-2020 Mouse Experiment 2\'; 
-
-
-% folder= 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\06-24-2020 Mouse Experiment 1\';
-% folder= 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\06-24-2020 Mouse Experiment 3\'; 
-% folder= 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\06-25-2020 Mouse Experiment 1\'; 
-
-%% REAL GEN US - 2019 
-
-
-% folder= 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\12-16 RECUT\'; 
-% works if light stim channel is set to 9 instead of 7
-
-% folder= 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\12-23 Mouse Experiment\'; 
-
-% folder= 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\12-24 Data\';
-
-% folder= 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\12-27-19 RECUT\' ;
-
-
-
-%% REAL PEN US - 2020-2021
-
-% folder='C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\06-23-21 RECUT\1st session\'; 
-% works with channels set to [ 1 2 3 4 5] !
-% folder = 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\6.24.21\06-24-21 RECUT session 2\';
-
-folder = 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\8_12_21 m1\' ;
-% folder = 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\8_12_21 m2\';
-% folder = 'C:\Users\Henry\MATLAB\Mourad Lab\Mouse_EEG\Data\8_13_21\' ; 
+folder = 'C:\Users\Henry\MATLAB\Projects\Pain_Study\Data\8_11_21 rat\'; 
 
 %% 
 %Change what is in the string depending on which file/files you want to run
@@ -66,8 +30,7 @@ ch_names={'V1L','S1L','S1R', 'V1R', 'lightstim'}; %setting up the names that wil
 trial_names={' FIRST LIGHT ONLY' 'LIGHT + US' ' SECOND LIGHT ONLY'};
 %plot_cwt=input('Plot CWTs? Y=1 N=2 :'); %CWT will show the frequency breakdown, use 2 if you just want to look at the averages of the EEG
 plot_cwt=2;
-time_series = input('time series(3 or 10)?');
-brain_wave = input("'3-100' = 1, low gamma = '2', beta = '3', alpha ='4', theta = '5', : ");
+
 %% this names the channels based on where they were placed, make sure they match lab chart
 
 % 8/12/21 m1
@@ -102,9 +65,8 @@ for_stats_analysis=[];
 % counter = 0 ;
 %for z=1:3 
 
-for z=1:4
+for z=1:3
 %      if isequal(file_list(z).name,"TRIAL2.mat"), continue, end % skips trial 2 for refactory period trial does we dont car about (yet)
-     if isequal(file_list(z).name,"Trial 2.mat"), continue, end 
 %      if isequal(file_list(z).name,"TRIAL 2.mat"), continue, end %for 12-23
      
 %      if isequal(file_list(z).name,"TRIAL6.mat"), continue, end % for 6/24 second session 
@@ -124,8 +86,9 @@ end
 
 % 
 % % to rename trials and skip 2 
-for_stats_analysis.Trial_2 = for_stats_analysis.Trial_3 ; 
-for_stats_analysis.Trial_3 = for_stats_analysis.Trial_4 ; 
+
+% for_stats_analysis.Trial_2 = for_stats_analysis.Trial_3 ; 
+% for_stats_analysis.Trial_3 = for_stats_analysis.Trial_4 ; 
  
 
 

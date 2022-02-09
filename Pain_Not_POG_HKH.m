@@ -8,14 +8,28 @@ close all
 clc
 % % %% load data
 
-filePath = 'C:\Users\Henry\MATLAB\Mourad Lab\Pain_Study\Data\8_11_21 rat\';
-fileName ='Trial 1' ;
+% filePath = 'C:\Users\Henry Tan\MATLAB\Projects\Pain_study\Data\08_11_21_Rat\';
+% fileName ='Trial 1' ;
+% 
+% filePath = 'C:\Users\Henry Tan\MATLAB\Projects\Pain_study\Data\08_18_2021 rat\';
+% fileName ='Trial 1' ; 
+
+filePath = 'C:\Users\Henry Tan\MATLAB\Projects\Pain_study\Data\08_24_2021 rat 1\';
+% fileName ='Trial 1' ;
+fileName ='Refractory part 4' ;
+
+% filePath = 'C:\Users\Henry Tan\MATLAB\Projects\Pain_study\Data\08_24_2021 rat 2\';
+% % fileName ='Trial 1' ;
+% fileName ='Refractory part 4' ;
+
 
 load([filePath,fileName]);
 
 %% set parameters
-
-set_channels=[1 2 3 4 6] ;
+% for 8/11
+% set_channels=[1 2 3 4 6] ;
+% for 8/16, 8/18 
+set_channels=[1 2 3 4 5 6 7] ;
 
 % set channel identities, stim should always be on index 5, no matter what channel 
 decision = input('Do you want to manually input channels?(1 = yes, 0 = no):') ;
@@ -25,22 +39,28 @@ if decision == 1
     RBLA = input('What channel is right BLA?:') ;
     LIL = input('What channel is left IL?:'); 
     RIL=set_channels(RIL);LBLA=set_channels(LBLA);RBLA=set_channels(RBLA);LIL=set_channels(LIL);stim=set_channels(5) ; 
-
 end 
 if decision == 0  
-    % 5/5
-    RIL=set_channels(1);LBLA=set_channels(4);RBLA=set_channels(3);LIL=set_channels(2);stim=set_channels(5) ;
-    % 5/20
-%     RS=set_channels(2);LS=set_channels(4);RH=set_channels(1);LH=set_channels(3);stim=set_channels(5) ; 
-%     5/18
-%     RS=set_channels(1);LS=set_channels(3);RH=set_channels(2);LH=set_channels(4);stim=set_channels(5) ;
+    % 8/11/21 
+%     RIL=set_channels(1);LBLA=set_channels(4);RBLA=set_channels(3);LIL=set_channels(2);stim=set_channels(5) ;
+    % 8/16/21
+%     RIL=set_channels(2);LBLA=set_channels(3);RBLA=set_channels(1);LIL=set_channels(4);stim=set_channels(5) 
+    % 8/24/21 rat 1 
+%     RIL=set_channels(4);LBLA=set_channels(1);RBLA=set_channels(2);LIL=set_channels(3);stim=set_channels(5) ;
+    % 8/24/21 rat 2 
+    RIL=set_channels(2);LBLA=set_channels(1);RBLA=set_channels(4);LIL=set_channels(3);stim=set_channels(5) ;
 end 
+
+%% running stim data or refractory 
+
+runstas = input("Running stim data:'1', or refractory data:'2'?:") ; 
+
+%% plot CWT or timeseries 
+
+plotter = input("Plot CWT = '1', STA timeseries = '2': ") ;
 
 %% Set sampling rate
 % fs = input('What is the tickrate/sampling rate?:') ;
-%Bobola Protocol sampling rate = 10k
-% fs=10000 ;
-%Eguchi Protocal sampling rate = 20k
 fs = 20000 ;
 
 %%
@@ -103,42 +123,73 @@ filteredData.(char(names(ii))) = filtfilt(b, a,alldata.(char(names(ii)))); % App
 end
 
 %% detect stimuli
-index_stim=[];%initialize reference array of stimulus onsets for STAs
-index_allstim=[];%secondary array of stimuli for identifying first pulse of a train. 
+if runstas == 1 
+    index_stim=[];%initialize reference array of stimulus onsets for STAs
+    index_allstim=[];%secondary array of stimuli for identifying first pulse of a train. 
 
-X=alldata.stimdata;
-X=X-min(X);
-X=X/max(X);
-Y=X>0.5;
-%Y=X>0.04;used during debugging, works as well
-Z=diff(Y);
-% index_allstim=find(Z>0.5);
-% index_allstim=index_allstim+1;
-index_allstim=find(Z>0.04);
-index_allstim=index_allstim+1;
-% abs(Z>
+    X=alldata.stimdata;
+    X=X-min(X);
+    X=X/max(X);
+    Y=X>0.5;
+    %Y=X>0.04;used during debugging, works as well
+    Z=diff(Y);
+    % index_allstim=find(Z>0.5);
+    % index_allstim=index_allstim+1;
+    index_allstim=find(Z>0.04);
+    index_allstim=index_allstim+1;
+    % abs(Z>
 
-%find first pulse of each train, if stimulation contains trains
-index_trains=diff(index_allstim)>20000;
-index_allstim(1)=[];
-index_stim=index_allstim(index_trains);
+    %find first pulse of each train, if stimulation contains trains
+    index_trains=diff(index_allstim)>20000;
+    index_allstim(1)=[];
+    index_stim=index_allstim(index_trains);
+else
+    index_stim=[];%initialize reference array of stimulus onsets for STAs
+    index_allstim=[];%secondary array of stimuli for identifying first pulse of a train. 0
+% implement artifical index_trains to plot avg of every second for 10 min refractories   
+% 0s and then 1s for every 60 units is generally index_train == 1 light every 10 sec. 
+% -- using every 100 units here
+% train_length = int(length(alldata.(char(names(1))))/(3423.2)); 
+%     train_length = length(alldata.(char(names(1))))/(2000) ;
+% % 8/24/21 rat 1 lightstim = ~6,000,000 indexes long train becomes 
+% % ~ 2000 indexes long. (lightstim data length)/train_length ~= 3423.2 
+%     artificial_train=zeros(1,train_length) ; 
+%     for k = 1:length(alldata.(char(names(1)))/100) 
+%         artificial_train(60*k) = 1; 
+%     end 
+% %     index_allstim(1)=[];
+%     index_stim=index_allstim(artificial_train);
 
+% 8/24/21 rat 1 index_stim data 
+    if filePath == 'C:\Users\Henry Tan\MATLAB\Projects\Pain_study\Data\08_24_2021 rat 1\';
+    index_stim = [327677,527677,727677,927677,1127677,1327677,1527677,1727677,1927677,2127677,2327677,2527677,2727677,2927677,3127677,3327677,3527677,3727677,3927677,4127677,4327677,4527677,4727677,4927677,5127677,5327677,5527677,5727677,5927677,6127677,6327677,6527677,6727677];
+    end
+% 8/24/21 rat 1 index_stim data 
+    if filePath == 'C:\Users\Henry Tan\MATLAB\Projects\Pain_study\Data\08_24_2021 rat 2\';
+    index_stim = [312677,512677,712677,912677,1112677,1312677,1512677,1712677,1912677,2112677,2312677,2512677,2712677,2912677,3112677,3312677,3512677,3712677,3912677,4112677,4312677,4512677,4712677,4912677,5112677,5312677,5512677,5712677,5912677];
+    end 
+end
 
-%% Create STAs
+    %% Create STAs
+    
 for i=1:length(names) %initiate data array to hold STAs
-stas.(char(names(i)))=[];
+    stas.(char(names(i)))=[];
 end
 
 tb=1; %time before stim to start STA
 ta=9; %time after stim to end STA
+% FOR refractory data plotting, this means the CWT output will be average
+% over 10 seconds for stim fake stim event 
 
 for i=1:length(names)
     for j=2:(length(index_stim)-1) %cycle through stimuli
-        stas.(char(names(i)))=[stas.(char(names(i))); filteredData.(char(names(i)))((index_stim(j)-fs*tb):(index_stim(j)+fs*ta))];
+          stas.(char(names(i)))=[stas.(char(names(i))); filteredData.(char(names(i)))((index_stim(j)-fs*tb):(index_stim(j)+fs*ta))];
     end
 end
 
+
 %% plot filtered STAS
+
 figure
 x2=1:length(stas.(char(names(1)))); % make an x axis
 x2=x2/fs-1; % convert x axis from samples to time 
@@ -155,44 +206,101 @@ end
 subplot(4,1,4)
 xlabel('time after stimulus onset (s)')
 
-%% plot filtered CWTs of STAs
+
+%% plot filtered CWTs of STAs or STA timeseries 
 % ticks=[0:.005:.1];
 ticks=[0:0.01:.1];
 clear yticks
 clear yticklabels
 
-
-% filterbank initialization
-% fb = cwtfilterbank('WaveletParameters',[2,5]);
-
-    for i=1:length(names)    
+str = string(names) ;
+    for i=1:length(names)-2    
 %     for i=1:length(names)  
         figure
         caxis_track=[];
         %ylabels={'V1bipolar (Hz)';'S1A (Hz)';'S1V1(Hz)'; '40hzStim (Hz)'};
         xlabel('time after stimulus onset (s)');
-        mediansig=median(stas.(char(names(i))));
-        [minfreq,maxfreq] = cwtfreqbounds(length(mediansig),fs); %determine the bandpass bounds for the signal
-        cwt(mediansig,[],fs);
-%         cwt(mediansig,fb,fs)
-        ylabel('Frequency (Hz)')
-        colormap(jet)
-        title(names(i))
-        ylim([.001, .1])
-        yticks(ticks)
-%         yticklabels({  0    5.0000   10.0000   15.0000   20.0000   25.0000   30.0000   35.0000   40.0000   45.0000   50.0000  55.0000  60})
-        yticklabels({  0 10.0000 20.0000 30.0000 40.0000 50.0000 60})
-        set(gca,'FontSize',15)
-%         caxis([.00008, .0002]);
-        caxis([.00008, .001]);
+        if plotter == 1
+            if runstas == 1 
+                % stimdata STA 
+                mediansig=median(stas.(char(names(i))));
+                [minfreq,maxfreq] = cwtfreqbounds(length(mediansig),fs); %determine the bandpass bounds for the signal
+                cwt(mediansig,[],fs);
+                ylabel('Frequency (Hz)')
+                colormap(jet)
+                title(names(i))
+                ylim([.001, .1])
+                yticks(ticks)
+        %         yticklabels({  0    5.0000   10.0000   15.0000   20.0000   25.0000   30.0000   35.0000   40.0000   45.0000   50.0000  55.0000  60})
+                yticklabels({  0 10.0000 20.0000 30.0000 40.0000 50.0000 60})
+                set(gca,'FontSize',15)
+        %         caxis([.00008, .0002]);
+                caxis([.00008, .001]);
+            else 
+                % refractory cwt 
+                mediansig=median(stas.(char(names(i))));
+                [minfreq,maxfreq] = cwtfreqbounds(length(mediansig),fs); %determine the bandpass bounds for the signal
+                cwt(mediansig,[],fs);
+                ylabel('Frequency (Hz)')
+                colormap(jet)
+                title(names(i))
+                ylim([.001, .1])
+                yticks(ticks)
+        %         yticklabels({  0    5.0000   10.0000   15.0000   20.0000   25.0000   30.0000   35.0000   40.0000   45.0000   50.0000  55.0000  60})
+                yticklabels({  0 10.0000 20.0000 30.0000 40.0000 50.0000 60})
+                set(gca,'FontSize',15)
+%                 caxis([.00008, .001]);
+                caxis([.00001, .0002]);
+            end 
+        else
+            % Timeseries movavg 
+            mediansig=median(stas.(char(names(i))));
+            ts = timeseries(mediansig,x2) ;
+            plot(ts)
+%             n = 7500; 
+            n = 5000; 
+            ts2 = movmean(mediansig, n) ; 
+           % median sta + moving average 
+%             plot(x2, mediansig, 'y', x2, ts2, 'k')
+%             legend(" " + n + " Pt. Average", "median STA");
+           % just moving average 
+%             plot(x2, ts2, 'DisplayName', title(names(i) + " mV & Moving Average"))
+            plot(x2, ts2) 
+            title(str(i))
+            ylabel('mV') ;
+            xlabel("Time (s)") ;
+        end
         
-        
-%         pngFileName = sprintf('plot_%d.fig', i);
+         
+%     pngFileName = sprintf('plot_%d.fig', i);
 	%fullFileName = fullfile(folder, pngFileName);
 		
 	% Then save it
 	%export_fig(fullFileName);
 % 	   saveas(gcf, pngFileName)
-	
-
     end
+    
+    %% movavg STA timeseries of IL and BLA 
+% figure
+% caxis_track=[];
+% %ylabels={'V1bipolar (Hz)';'S1A (Hz)';'S1V1(Hz)'; '40hzStim (Hz)'};
+% xlabel('time after stimulus onset (s)');
+% mediansig1=median(stas.RILdata);
+% mediansig2=median(stas.RBLAdata); 
+% RILx=1:length(stas.RILdata);
+% ts = timeseries(mediansig1,RILx) ;
+% % moving average of 5000 points
+% n = 5000; 
+% ts1 = movmean(mediansig1, n) ; 
+% ts2 = movmean(mediansig2, n) ; 
+% % median sta + moving average 
+% % plot(x2, mediansig, 'y', x2, ts2, 'k')
+% % legend(" " + n + " Pt. Average", "median STA");
+% % just moving average 
+% plot(RILx, ts1, 'r')
+% hold on 
+% plot(RILx, ts2, 'b')
+% legend("Right IL", "Right BLA");
+% ylabel('mV') ;
+% title(names(i) + " mV & Moving Average");
+% xlabel("Time (s)") ;
